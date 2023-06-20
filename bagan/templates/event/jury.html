@@ -1,0 +1,87 @@
+{% extends 'event/testbase.html' %} {% load static %}
+
+{% block title %}
+    Penilaian Jury
+{% endblock title %}
+
+{% block content %}
+{% if detailbagan == None %}
+    <h1>Silahkan Tunggu</h1>
+{% else %}
+    <h1>{{ request.user.username }}</h1>
+    <div class="form-group">
+        <form method="POST" action="{% url 'sendscore' event_slug=event.slug tatami_pk=tatami.pk %}">
+        {% csrf_token %}
+        {% if detailbagan.id_atlet.count == 1 %}
+            <h1>{{ atlet1 }}</h1>
+            <input id="data-input1" class="form-control" type="text" name="input1" oninput="validateInput1(event)" required>
+            <br>
+                <button class="btn btn-primary" id="submit-btn">
+                    Send
+                </button>
+        {% else %}
+        <h1>{{ atlet1 }}</h1>
+            <input id="data-input1" class="form-control" type="text" name="input1" oninput="validateInput1(event)" required>
+            <h1>VS</h1>
+            <h1>{{ atlet2 }}</h1>
+            <input id="data-input2" class="form-control" type="text" name="input2" oninput="validateInput2(event)" required>
+            <br>
+                <button class="btn btn-primary" id="submit-btn">
+                    Send
+                </button>
+        {% endif %}
+        </form>
+    </div>
+{% endif %}
+
+{% endblock content %}
+
+{% block scripts %}
+<script>
+    // function validateInput1(event) {
+    //     const input = event.target;
+    //     const value = parseFloat(input.value);
+        
+    //     if (isNaN(value) || value < 5 || value > 10) {
+    //       input.setCustomValidity('Please enter a number between 5 and 10.');
+    //     } else {
+    //       input.setCustomValidity('');
+    //     }
+    //   }
+
+    function validateInput1(event) {
+    const input = event.target.value;
+    const isValid = /^([5-9](\.\d)?|10)$/.test(input);
+
+      if (!isValid) {
+        event.target.setCustomValidity("Please enter a numeric value between 5 and 10.");
+      } else {
+        event.target.setCustomValidity("");
+      }
+    }
+
+    // function validateInput2(event) {
+    //   const input = event.target;
+    //   const value = parseFloat(input.value);
+      
+    //   if (isNaN(value) || value < 5 || value > 10) {
+    //     input.setCustomValidity('Please enter a number between 5 and 10.');
+    //   } else {
+    //     input.setCustomValidity('');
+    //   }
+    // }
+
+    function validateInput2(event) {
+    const input = event.target.value;
+    const isValid = /^([5-9](\.\d)?|10)$/.test(input);
+
+      if (!isValid) {
+        event.target.setCustomValidity("Please enter a numeric value between 5 and 10.");
+      } else {
+        event.target.setCustomValidity("");
+      }
+    }
+</script>
+{% endblock scripts %}
+
+    

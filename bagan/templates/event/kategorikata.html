@@ -1,0 +1,191 @@
+{% extends 'event/eventbase.html' %} {% load static %}
+
+{% block title %}
+    {{ event.judul_event }} | {{ kategori.judul_kategori }} | Ambrilindo
+{% endblock %}
+
+{% block content %}
+    <h1 class="h3 mb-3"><strong>Dashboard Kata</strong> {{ kategori.judul_kategori }}
+		{% url 'keldetailkategori' event_slug=event.slug kategori_slug=kategori.slug jenis_kelamin='putra' as putra_url %}
+		{% url 'keldetailkategori' event_slug=event.slug kategori_slug=kategori.slug jenis_kelamin='putri' as putri_url %} 
+		{% if putra_url in request.path %}
+			(Putra)
+		{% endif %}
+		{% if putri_url in request.path %}
+			(Putri)
+		{% endif %}
+	</h1>
+	{% if putra_url in request.path %}
+		<a href="{% url 'keltambahbagan' event_slug=event.slug kategori_slug=kategori.slug jenis_kelamin='putra' %}">
+	{% elif putri_url in request.path %}
+		<a href="{% url 'keltambahbagan' event_slug=event.slug kategori_slug=kategori.slug jenis_kelamin='putri' %}">
+	{% endif %}
+		<div class="dropdown show">
+			<a class="btn btn-primary mb-2 dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+				<i class="align-middle me-2" data-feather="file-plus"></i>Tambah Bagan
+			</a>
+			<div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+			{% if putra_url in request.path %}
+			  	<a class="dropdown-item" href="{% url 'keltambahbaganinternal' event_slug=event.slug kategori_slug=kategori.slug jenis_kelamin='putra' %}">Internal</a>
+			  	<a class="dropdown-item" href="{% url 'keltambahbaganexternal' event_slug=event.slug kategori_slug=kategori.slug jenis_kelamin='putra' %}">External</a>
+			{% elif putri_url in request.path %}
+				<a class="dropdown-item" href="{% url 'keltambahbaganinternal' event_slug=event.slug kategori_slug=kategori.slug jenis_kelamin='putri' %}">Internal</a>
+				<a class="dropdown-item" href="{% url 'keltambahbaganexternal' event_slug=event.slug kategori_slug=kategori.slug jenis_kelamin='putri' %}">External</a>
+			{% endif %}
+			</div>
+		</div>
+	</a>
+	<div class="mb-2">
+		{% if putra_url in request.path %}
+		<a href="{% url 'keldetailkategori' event_slug=event.slug kategori_slug=kategori.slug jenis_kelamin='putra' %}">
+			<button type="button" class="btn {% if request.path == putra_url %}btn-dark {% else %} btn-light btn-outline-dark {% endif %}">
+				Semua
+			</button>
+		</a>
+
+		<a href="{% url 'keldetailkategoriinternal' event_slug=event.slug kategori_slug=kategori.slug jenis_kelamin='putra' %}">
+			<button type="button" class="btn {% if request.path == putrainternal_url %}btn-dark{% else %}btn-light btn-outline-dark{% endif %}">
+				Internal
+			</button>
+		</a>
+		
+		<a href="{% url 'keldetailkategoriexternal' event_slug=event.slug kategori_slug=kategori.slug jenis_kelamin='putra' %}">
+			<button type="button" class="btn {% if request.path == putraexternal_url %}btn-dark{% else %}btn-light btn-outline-dark{% endif %}">
+				External
+			</button>
+		</a>
+		{% else %}
+		<a href="{% url 'keldetailkategori' event_slug=event.slug kategori_slug=kategori.slug jenis_kelamin='putri' %}">
+			<button type="button" class="btn {% if request.path == putri_url %}btn-dark {% else %} btn-light btn-outline-dark {% endif %}">
+				Semua
+			</button>
+		</a>
+
+		<a href="{% url 'keldetailkategoriinternal' event_slug=event.slug kategori_slug=kategori.slug jenis_kelamin='putri' %}">
+			<button type="button" class="btn {% if request.path == putriinternal_url %}btn-dark{% else %}btn-light btn-outline-dark{% endif %}">
+				Internal
+			</button>
+		</a>
+		
+		<a href="{% url 'keldetailkategoriexternal' event_slug=event.slug kategori_slug=kategori.slug jenis_kelamin='putri' %}">
+			<button type="button" class="btn {% if request.path == putriexternal_url %}btn-dark{% else %}btn-light btn-outline-dark{% endif %}">
+				External
+			</button>
+		</a>
+		{% endif %}
+	</div>
+    <div class="row">
+		<div class="d-flex order-1 order-xxl-1">
+			<div class="card flex-fill">
+				<div class="card-header">
+					<h5 class="card-title mb-0">Semua <b>Bagan</b></h5>
+				</div>
+				<div class="table-responsive">
+					<table class="table table-hover my-0">
+						<thead>
+							<tr>
+								<tr>
+									<th class="d-none d-xl-table-cell">No</th>
+									<th>Judul</th>
+									<th>Event</th>
+									<th>MISC</th>
+								</tr>
+							</tr>
+						</thead>
+						<tbody>
+							{% for bagan in bagan %}
+							<tr>
+
+								<td class="d-none d-xl-table-cell">{{ forloop.counter }}</td>
+								<td>
+									{% if putra_url in request.path %}
+										<a href="{% url 'keldetailbagan' event_slug=event.slug kategori_slug=kategori.slug jenis_kelamin='putra' pk=bagan.pk %}">
+									{% elif putri_url in request.path %}
+										<a href="{% url 'keldetailbagan' event_slug=event.slug kategori_slug=kategori.slug jenis_kelamin='putri' pk=bagan.pk %}">
+									{% endif %}
+										<b>{{ bagan.judul_bagan }}</b>
+									</a>
+								</td>
+								<td><span class="badge {% if bagan.status == 'P' %}bg-danger {% else %}bg-success {% endif %}"> {% if bagan.status == 'P' %}Pending {% else %}Selesai {% endif %}</td>
+								<td>
+									<div >
+										<button class="btn btn-primary btn-sm" style=""><i class="align-middle" data-feather="edit"></i></button>
+										<button class="btn btn-danger btn-sm" style=""><i class="align-middle" data-feather="trash-2"></i></button>
+									</div>
+								</td>
+
+							</tr>
+							{% endfor %}
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+		
+		<div class="d-flex order-1 order-xxl-1">
+			<div class="card flex-fill">
+				<div class="card-header">
+					<h5 class="card-title mb-0">Semua Atlet {% if putra_url in request.path %}<b>Putra</b>{% elif putri_url in request.path %}<b>Putri</b>{% endif %}</h5>
+				</div>
+				<div class="table-responsive">
+					<table class="table table-hover my-0">
+						<thead>
+							<tr>
+								<tr>
+									<th class="d-none d-xl-table-cell">No</th>
+									<th>Nama</th>
+									<th>Event</th>
+									<th>Perguruan</th>
+									<th>Perwakilan</th>
+									<th>Usia</th>
+									<th>BB</th>
+									<th>MISC</th>
+								</tr>
+							</tr>
+						</thead>
+						<tbody>
+						{% if putra_url in request.path %}
+							{% for putra in atlet_putra %}
+								<tr>
+									<td class="d-none d-xl-table-cell">{{ forloop.counter }}</td>
+										<td><b>{{ putra.nama_atlet }}</b></td>
+										<td><span class="badge {% if putra.jenis_event == 'internal' %}bg-success{% else %}bg-danger{% endif %}">{{ putra.get_jenis_event_display }}</td>
+										<td>{{ putra.perguruan }}</td>
+										<td>{{ putra.perwakilan }}</td>
+										<td>{{ putra.usia_atlet }} Tahun</td>
+										<td>{{ putra.berat_badan }}</td>
+										<td>
+											<div >
+												<button class="btn btn-primary btn-sm" style=""><i class="align-middle" data-feather="edit"></i></button>
+												<button class="btn btn-danger btn-sm" style=""><i class="align-middle" data-feather="trash-2"></i></button>
+											</div>
+										</td>
+								</tr>
+							{% endfor %}
+							{% else %}
+							{% for putri in atlet_putri %}
+							<tr>
+								<td class="d-none d-xl-table-cell">{{ forloop.counter }}</td>
+									<td><b>{{ putri.nama_atlet }}</b></td>
+									<td><span class="badge {% if putri.jenis_event == 'internal' %}bg-success{% else %}bg-danger{% endif %}">{{ putri.get_jenis_event_display }}</td>
+									<td>{{ putri.perguruan }}</td>
+									<td>{{ putri.perwakilan }}</td>
+									<td>{{ putri.usia_atlet }} Tahun</td>
+									<td>{{ putri.berat_badan }}</td>
+									<td>
+										<div >
+											<button class="btn btn-primary btn-sm" style=""><i class="align-middle" data-feather="edit"></i></button>
+											<button class="btn btn-danger btn-sm" style=""><i class="align-middle" data-feather="trash-2"></i></button>
+										</div>
+									</td>
+							</tr>
+							{% endfor %}
+						{% endif %}
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+
+{% endblock %}

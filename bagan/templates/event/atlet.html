@@ -1,0 +1,164 @@
+{% extends 'event/eventbase.html' %} {% load static %}
+
+{% block title %}
+    {{ event.judul_event }} | Atlet
+{% endblock %}
+
+{% block content %}
+    <h1 class="h3 mb-3"><strong>Dashboard Atlet</strong> {{ event.judul_event }}</h1>
+    <button class="btn btn-primary mb-2" data-toggle="modal" data-target="#exampleModalCenter"><i class="align-middle me-2" data-feather="user-plus"></i>Tambah</button>
+    <br>
+    <form method="POST" action="{% url 'atletimport' slug=event.slug %}" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="row mb-2">
+            <div class="col-12 col-md-3 col-xxl-6 d-flex order-1 order-xxl-1">
+                <input type="file" class="form-control" name="file" accept=".xlsx" required/>  
+            </div>
+            <div class="col-12 col-md-6 col-xxl-6 d-flex order-2 order-xxl-1">
+                <button type="submit" class="btn btn-success"><i class="align-middle me-2" data-feather="file-text"></i></i>Import</button>
+            </div>
+        </div>
+    </form>
+	<div class="mb-2">
+		<a href="{% url 'keldetailatlet' slug=event.slug %}"><button type="button" class="btn {% if request.path == '/kelevent/'|add:event.slug|add:'/atlet/' %}btn-dark {% else %}btn-light btn-outline-dark {% endif %}">Semua</button>
+		<a href="{% url 'kelinternalatlet' slug=event.slug %}"><button type="button" class="btn {% if request.path == '/kelevent/'|add:event.slug|add:'/atlet/internal/' %}btn-dark {% else %}btn-light btn-outline-dark {% endif %}">Internal</button>
+		<a href="{% url 'kelexternalatlet' slug=event.slug %}"><button type="button" class="btn {% if request.path == '/kelevent/'|add:event.slug|add:'/atlet/external/' %}btn-dark {% else %}btn-light btn-outline-dark {% endif %}">External</button></a>
+	</div>
+
+    {% comment %} Demo Header {% endcomment %}
+  
+      <!-- Modal -->
+    <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle">
+        <div class="modal-dialog modal-md  modal-dialog-centered" role="document">
+            <div class="modal-content rounded-0">
+                <div class="modal-body py-0">
+    
+                
+                    <div class="d-flex main-content">
+                        <div class="content-text p-4">
+                            <h3>Tambah Atlet</h3>
+                            {% comment %} <p>All their equipment and instruments are alive. The sky was cloudless and of a deep dark blue.</p> {% endcomment %}
+            
+                            <form action="#">
+                                <div class="form-group">
+                                    <label for="name">Nama</label>
+                                    <input type="text" class="form-control" id="text" placeholder="Nama...">
+                                </div>
+                                <div class="form-group">
+                                    <label for="perguruan">Perguruan</label>
+                                    <input type="text" class="form-control" id="text" placeholder="Perguruan...">
+                                </div>
+                                <div class="form-group">
+                                    <label for="tempat">Tempat Lahir</label>
+                                    <input type="text" class="form-control" id="text" placeholder="Tempat Lahir...">
+                                </div>
+                                <div class="form-group">
+                                    <label for="tanggal">Tanggal Lahir</label>
+                                    <input type="date" class="form-control" id="text" placeholder="Tanggal Lahir...">
+                                </div>
+                                <div class="form-group">
+                                    <label for="beratbadan">Berat Badan</label>
+                                    <input type="number" class="form-control" id="text" placeholder="Berat Badan...">
+                                </div>
+
+                                <div class="form-group d-flex align-items-center">
+                                <input type="submit" value="Tambah" class="btn btn-primary mr-3 px-5">
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+    
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% comment %} Demo Footer {% endcomment %}
+
+    <div class="row">
+		<div class="d-flex order-1 order-xxl-1" style="height: 400px; overflow-y: auto;">
+			<div class="card flex-fill">
+				<div class="card-header">
+					<h5 class="card-title mb-0">Atlet <b>Putra</b></h5>
+				</div>
+				<div class="table-responsive">
+					<table class="table table-hover my-0">
+						<thead>
+							<tr>
+								<th class="d-none d-xl-table-cell">No</th>
+								<th>Nama</th>
+								<th>Event</th>
+								<th>Perguruan</th>
+								<th>Perwakilan</th>
+								<th>Usia</th>
+								<th>BB</th>
+								<th>MISC</th>
+							</tr>
+						</thead>
+						<tbody>
+							{% for putra in atlet_putra %}
+							<tr>
+								<td class="d-none d-xl-table-cell">{{ forloop.counter }}</td>
+								<td><b>{{ putra.nama_atlet }}</b></td>
+								<td><span class="badge {% if putra.jenis_event == 'internal' %}bg-success{% else %}bg-danger{% endif %}">{{ putra.get_jenis_event_display }}</td>
+								<td>{{ putra.perguruan }}</td>
+								<td>{{ putra.perwakilan }}</td>
+								<td>{{ putra.usia_atlet }} Tahun</td>
+								<td>{{ putra.berat_badan }}</td>
+								<td>
+									<div >
+										<button class="btn btn-primary btn-sm" style=""><i class="align-middle" data-feather="edit"></i></button>
+										<button class="btn btn-danger btn-sm" style=""><i class="align-middle" data-feather="trash-2"></i></button>
+									</div>
+								</td>
+							</tr>
+							{% endfor %}
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+        <div class="d-flex order-1 order-xxl-1" style="height: 400px; overflow-y: auto;">
+			<div class="card flex-fill">
+				<div class="card-header">
+					<h5 class="card-title mb-0">Atlet <b>Putri</b></h5>
+				</div>
+				<div class="table-responsive">
+					<table class="table table-hover my-0">
+						<thead>
+							<tr>
+								<th class="d-none d-xl-table-cell">No</th>
+								<th>Nama</th>
+								<th>Event</th>
+								<th>Perguruan</th>
+								<th>Perwakilan</th>
+								<th>Usia</th>
+								<th>BB</th>
+								<th>MISC</th>
+							</tr>
+						</thead>
+						<tbody>
+							{% for putra in atlet_putri %}
+							<tr>
+								<td class="d-none d-xl-table-cell">{{ forloop.counter }}</td>
+								<td><b>{{ putra.nama_atlet }}</b></td>
+								<td><span class="badge {% if putra.jenis_event == 'internal' %}bg-success{% else %}bg-danger{% endif %}">{{ putra.get_jenis_event_display }}</td>
+								<td>{{ putra.perguruan }}</td>
+								<td>{{ putra.perwakilan }}</td>
+								<td>{{ putra.usia_atlet }} Tahun</td>
+								<td>{{ putra.berat_badan }}</td>
+								<td>
+									<div >
+										<button class="btn btn-primary btn-sm" style=""><i class="align-middle" data-feather="edit"></i></button>
+										<button class="btn btn-danger btn-sm" style=""><i class="align-middle" data-feather="trash-2"></i></button>
+									</div>
+								</td>
+							</tr>
+							{% endfor %}
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+{% endblock %}

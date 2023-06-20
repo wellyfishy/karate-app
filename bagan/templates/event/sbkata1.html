@@ -1,0 +1,91 @@
+<h2>{{ atlet1 }}</h2>
+<h2>{{ atlet2 }}</h2>
+
+<p>Countup: <span id="minutes">05</span>:<span id="seconds">00</span></p>
+
+{% url 'keldetailbagan' event_slug=event.slug kategori_slug=kategori.slug jenis_kelamin='putra' as putra_url %}
+{% url 'keldetailbagan' event_slug=event.slug kategori_slug=kategori.slug jenis_kelamin='putri' as putri_url %}
+
+<div id="timerData"
+    data-event-slug="{{ event.slug }}"
+    data-kategori-slug="{{ kategori.slug }}"
+    data-bagan-pk="{{ bagan.pk }}"
+    data-detailbagan-pk="{{ detailbagan.pk }}"
+    data-tatami-pk="{{ tatami.pk }}"
+    {% if 'putra' in request.path %}
+        data-jenis-kelamin="putra"
+    {% endif %}
+    {% if 'putri' in request.path %}
+        data-jenis-kelamin="putri"
+    {% endif %}
+></div>
+
+{% comment %} var timerStatusUrl = "{% url 'timerstatus1' event_slug=event.slug kategori_slug=kategori.slug jenis_kelamin='putra' bagan_pk=bagan.pk detailbagan_pk=detailbagan.pk tatami_pk=tatami.pk %}"; {% endcomment %}
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script>
+    $(document).ready(function() {
+        var minutesLabel = $("#minutes");
+        var secondsLabel = $("#seconds");
+        var totalSeconds = 300;
+        var isTimerRunning = false;  // Variable to track the timer running state
+
+        var timerData = $("#timerData");
+        var eventSlug = timerData.data("event-slug");
+        var kategoriSlug = timerData.data("kategori-slug");
+        var baganPk = timerData.data("bagan-pk");
+        var detailbaganPk = timerData.data("detailbagan-pk");
+        var tatamiPk = timerData.data("tatami-pk");
+        var jenisKelamin = timerData.data("jenis-kelamin");
+        var timerStatusUrl = "/kelevent/" + eventSlug + "/kata/" + kategoriSlug + "/";
+
+        if (jenisKelamin === "putra") {
+            timerStatusUrl += "putra/";
+        } else if (jenisKelamin === "putri") {
+            timerStatusUrl += "putri/";
+        }
+        timerStatusUrl += baganPk + "/" + detailbaganPk + "/" + tatamiPk + "/timer_status/";
+
+        // var timerStatusUrl = "{% url 'timerstatus1' event_slug=event.slug kategori_slug=kategori.slug jenis_kelamin='putra' bagan_pk=bagan.pk detailbagan_pk=detailbagan.pk tatami_pk=tatami.pk %}";
+
+        // Function to update the timer status using AJAX
+        function updateTimerStatus() {
+            $.ajax({
+                url: timerStatusUrl,
+                method: "GET",
+                success: function(data) {
+                    isTimerRunning = (data.timer_status === "Running");
+                }
+            });
+        }
+
+        // Function to update the countup timer display
+        function updateCountupTimer() {
+            if (isTimerRunning) {
+                totalSeconds--;
+                localStorage.setItem('totalSeconds', totalSeconds);  // Store the totalSeconds value in local storage
+                var minutes = Math.floor(totalSeconds / 60);
+                var seconds = totalSeconds % 60;
+                minutesLabel.text(pad(minutes));
+                secondsLabel.text(pad(seconds));
+            }
+        }
+
+        // Call the updateTimerStatus function every 1 second
+        setInterval(updateTimerStatus, 1000);
+
+        // Call the updateCountupTimer function every 1 second
+        setInterval(updateCountupTimer, 1000);
+   });
+
+   function pad(val) {
+       var valString = val.toString();
+       if (valString.length < 2) {
+           return "0" + valString;
+       } else {
+           return valString;
+       }
+   }
+</script>
+

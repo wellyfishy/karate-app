@@ -1,0 +1,391 @@
+{% extends 'event/eventbase.html' %}
+
+{% block title %}
+    {{ event.judul_event }} | {{ kategori.judul_kategori }} | Ambrilindo
+{% endblock title %}
+
+{% block content %}
+    {% url 'keldetailkategori' event_slug=event.slug kategori_slug=kategori.slug jenis_kelamin='putra' as putra_url %}
+    {% url 'keldetailkategori' event_slug=event.slug kategori_slug=kategori.slug jenis_kelamin='putri' as putri_url %}
+    <h1 class="h3 mb-3"><strong>Control Panel {{ tatami }}</strong> {{ bagan.judul_bagan }}</h1>
+    <button onclick="openNewTab1('{{ detail_bagan.pk }}')"  
+        {% if putra_url in request.path %} 
+            data-url="{% url 'scoringboard1' event_slug=event.slug kategori_slug=kategori.slug jenis_kelamin='putra' bagan_pk=bagan.pk detailbagan_pk=detailbagan.pk tatami_pk=tatami.pk %}" 
+        {% elif putri_url in request.path %}
+            data-url="{% url 'scoringboard1' event_slug=event.slug kategori_slug=kategori.slug jenis_kelamin='putri' bagan_pk=bagan.pk detailbagan_pk=detailbagan.pk tatami_pk=tatami.pk %}" 
+        {% endif %} class="btn" style="background-color: black; color: white; height: -10px">
+        <i class="align-middle" data-feather="eye"></i>
+        Tampilkan Scoring Board
+    </button>
+
+    <script>
+        function openNewTab1(detail_bagan_pk) {
+            var button = event.target;
+            var url = button.getAttribute('data-url');
+            url = url.replace('detailbagan_pk', detail_bagan_pk);
+            window.open(url, "_blank");
+        }
+    </script>  
+
+    <div style="margin-top: 10px;">
+        <button class="btn btn-primary" id="startButton">
+            <i class="align-middle" data-feather="play"></i>
+            Start Timer
+        </button>
+        <button class="btn btn-danger" id="pauseButton">
+            <i class="align-middle" data-feather="pause"></i>
+            Pause Timer
+        </button>
+    </div>
+
+    <hr>
+    <div class="row" style="margin-top: 10px;">
+        <div class="d-flex order-1 order-xxl-1">
+            <div class="card flex-fill">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Scoring <b>{{ tatami }}</b></h5>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-hover my-0">
+                        <thead>
+                            <tr>
+                                <th>Nama</th>
+                                <th>Jury 1</th>
+                                <th>Jury 2</th>
+                                <th>Jury 3</th>
+                                <th>Jury 4</th>
+                                <th>Jury 5</th>
+                                <th>Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% if detailbagan.id_atlet.count == 1 %}
+                            <tr>
+                                <td><b>{{ atlet1 }}</b></td>
+                                <td id="score1j1">{{ score1j1.jury_score }}</td>
+                                <td id="score1j2">{{ score1j2.jury_score }}</td>
+                                <td id="score1j3">{{ score1j3.jury_score }}</td>
+                                <td id="score1j4">{{ score1j4.jury_score }}</td>
+                                <td id="score1j5">{{ score1j5.jury_score }}</td>
+                                <td>
+                                    <span class="badge bg-warning">
+                                        {% if totalscore1 %}
+                                            {{ totalscore1.total }}
+                                        {% else %}
+                                            Total
+                                        {% endif %}
+                                    </span>
+                                </td>
+                            </tr>
+                            <tr style="display: none;">
+                                <td><b>{{ atlet2 }}</b></td>
+                                <td id="score2j1">{{ score2j1.jury_score }}</td>
+                                <td id="score2j2">{{ score2j2.jury_score }}</td>
+                                <td id="score2j3">{{ score2j3.jury_score }}</td>
+                                <td id="score2j4">{{ score2j4.jury_score }}</td>
+                                <td id="score2j5">{{ score2j5.jury_score }}</td>
+                                <td><span class="badge bg-warning">Total</span></td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td><b>{{ atlet1 }}</b></td>
+                                <td id="score1j1">{{ score1j1.jury_score }}</td>
+                                <td id="score1j2">{{ score1j2.jury_score }}</td>
+                                <td id="score1j3">{{ score1j3.jury_score }}</td>
+                                <td id="score1j4">{{ score1j4.jury_score }}</td>
+                                <td id="score1j5">{{ score1j5.jury_score }}</td>
+                                <td>
+                                    <span class="badge bg-warning">
+                                        {% if totalscore1 %}
+                                            {{ totalscore1.total }}
+                                        {% else %}
+                                            Total
+                                        {% endif %}
+                                    </span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><b>{{ atlet2 }}</b></td>
+                                <td id="score2j1">{{ score2j1.jury_score }}</td>
+                                <td id="score2j2">{{ score2j2.jury_score }}</td>
+                                <td id="score2j3">{{ score2j3.jury_score }}</td>
+                                <td id="score2j4">{{ score2j4.jury_score }}</td>
+                                <td id="score2j5">{{ score2j5.jury_score }}</td>
+                                <td>
+                                    <span class="badge bg-warning">
+                                        {% if totalscore2 %}
+                                            {{ totalscore2.total }}
+                                        {% else %}
+                                            Total
+                                        {% endif %}
+                                    </span>
+                                </td>
+                            </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <a href="{% url 'totalnilai1' event_slug=event.slug kategori_slug=kategori.slug jenis_kelamin='putra' bagan_pk=bagan.pk detailbagan_pk=detailbagan.pk tatami_pk=tatami.pk %}">
+        <button id="testingButton" class="btn btn-primary">
+            <i class="align-middle" data-feather="eye"></i>
+            Tampilkan Total Nilai
+        </button>
+    </a>
+    <button id="testingButton" class="btn btn-warning" onclick="testing()">
+        <i class="align-middle" data-feather="eye"></i>
+        Tampilkan Perbedaan Nilai
+    </button>
+    <a href="{% url 'leavecontrolpanel' event_slug=event.slug kategori_slug=kategori.slug jenis_kelamin='putra' bagan_pk=bagan.pk detailbagan_pk=detailbagan.pk tatami_pk=tatami.pk %}">
+        <button class="btn btn-danger">
+            <i class="align-middle" data-feather=""></i>
+            Selesai Nilai
+        </button>
+    </a>
+
+    <div style="color: black;">
+        {% for score1 in score1 %}
+            {{ score1.jury_score }}
+        {% endfor %}
+    </div>
+    <div style="color: black;">
+        {% for score2 in score2 %}
+            {{ score2.jury_score }}
+        {% endfor %}
+    </div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script>
+       $(document).ready(function() {
+            var csrftoken = $('[name=csrfmiddlewaretoken]').val();  // Fetch the CSRF token
+            var startUrl = "{% url 'starttimer1' event_slug=event.slug kategori_slug=kategori.slug jenis_kelamin='putra' bagan_pk=bagan.pk detailbagan_pk=detailbagan.pk tatami_pk=tatami.pk %}";
+            var pauseUrl = "{% url 'pausetimer1' event_slug=event.slug kategori_slug=kategori.slug jenis_kelamin='putra' bagan_pk=bagan.pk detailbagan_pk=detailbagan.pk tatami_pk=tatami.pk %}"; 
+
+            $("#startButton").click(function() {
+                $.ajax({
+                    url: startUrl,
+                    method: "POST",
+                    headers: { "X-CSRFToken": csrftoken },  // Pass the CSRF token in the headers
+                    success: function(data) {
+                        console.log("Timer started successfully");
+                        }
+                    });
+                });
+
+
+           $("#pauseButton").click(function() {
+               $.ajax({
+                    url: pauseUrl,
+                    method: "POST",
+                    headers: { "X-CSRFToken": csrftoken },  // Pass the CSRF token in the headers
+                    success: function(data) {
+                        console.log("Timer paused successfully");
+                    }
+                });
+            });
+        });
+    </script>
+
+    <div hidden>
+        <p id="event-slug">{{ event.slug }}</p>
+        <p id="kategori-slug">{{ kategori.slug }}</p>
+        {% if putra_url in request.path %}
+        <p id="jenis-kelamin">putra</p>
+        {% elif putri_url in request.path %}
+        <p id="jenis-kelamin">putri</p>
+        {% endif %}
+        <p id="bagan-pk">{{ bagan.pk }}</p>
+        <p id="detail-bagan-pk">{{ detailbagan.pk }}</p>
+        <p id="tatami-pk">{{ tatami.pk }}</p>
+    </div>
+
+    {% block scripts %}
+    <script>
+        const eventSlug = document.getElementById('event-slug').textContent.trim()
+        const kategoriSlug = document.getElementById('kategori-slug').textContent.trim()
+        const jenisKelamin = document.getElementById('jenis-kelamin').textContent.trim()
+        const baganPk = document.getElementById('bagan-pk').textContent.trim()
+        const detailbaganPk = document.getElementById('detail-bagan-pk').textContent.trim()
+        const tatamiPk = document.getElementById('tatami-pk').textContent.trim()
+        
+        // Create a WebSocket connection
+        const socket = new WebSocket(`ws://${window.location.host}/ws/kelevent/${eventSlug}/kata/${kategoriSlug}/${jenisKelamin}/${baganPk}/${detailbaganPk}/${tatamiPk}/`);
+    
+        console.log(socket)
+
+        socket.onopen = function(e) {
+            socket.send(JSON.stringify({
+                'command': 'fetch_data',
+            }));
+        };
+    
+        socket.onmessage = function(e) {
+            const data = JSON.parse(e.data)
+            console.log(data)
+
+            if (data.sender === 1) {
+                document.getElementById("score1j1").innerHTML = data.message1
+                document.getElementById("score2j1").innerHTML = data.message2
+            } else if (data.sender === 2) {
+                document.getElementById("score1j2").innerHTML = data.message1
+                document.getElementById("score2j2").innerHTML = data.message2
+            } else if (data.sender === 3) {
+                document.getElementById("score1j3").innerHTML = data.message1
+                document.getElementById("score2j3").innerHTML = data.message2
+            } else if (data.sender === 4) {
+                document.getElementById("score1j4").innerHTML = data.message1
+                document.getElementById("score2j4").innerHTML = data.message2
+            } else if (data.sender === 5) {
+                document.getElementById("score1j5").innerHTML = data.message1
+                document.getElementById("score2j5").innerHTML = data.message2
+            } else {
+                console.log('ERROR')
+            } 
+        };
+    
+        socket.onclose = function(e) {
+            console.log("WebSocket connection closed.");
+        };
+    
+        socket.onerror = function(e) {
+            console.error("WebSocket error:" + e);
+        };
+
+        function testing() {
+
+            const scores = [
+                parseFloat(document.getElementById("score1j1").textContent.trim()),
+                parseFloat(document.getElementById("score1j2").textContent.trim()),
+                parseFloat(document.getElementById("score1j3").textContent.trim()),
+                parseFloat(document.getElementById("score1j4").textContent.trim()),
+                parseFloat(document.getElementById("score1j5").textContent.trim())
+            ];
+
+            const scores1 = [
+                parseFloat(document.getElementById("score2j1").textContent.trim()),
+                parseFloat(document.getElementById("score2j2").textContent.trim()),
+                parseFloat(document.getElementById("score2j3").textContent.trim()),
+                parseFloat(document.getElementById("score2j4").textContent.trim()),
+                parseFloat(document.getElementById("score2j5").textContent.trim())
+            ];
+
+            // console.log(scores)
+            console.log(scores1)
+
+            // Find the highest and lowest scores
+            const highestScore = Math.max(...scores);
+            const lowestScore = Math.min(...scores);
+
+            const highestScore1 = Math.max(...scores1);
+            const lowestScore1 = Math.min(...scores1);
+
+            let highestIndex = -1;
+            let lowestIndex = -1;
+
+            let highestIndex1 = -1;
+            let lowestIndex1 = -1;
+
+            // Find the indices of elements with the highest and lowest scores
+            for (let i = 0; i < scores.length; i++) {
+                if (scores[i] === highestScore) {
+                  highestIndex = i;
+                  break;
+                }
+            }
+
+            // Find the index of the first occurrence of the lowest score
+            for (let i = 0; i < scores.length; i++) {
+                if (scores[i] === lowestScore) {
+                lowestIndex = i;
+                break;
+                }
+            }
+
+            for (let i = 0; i < scores.length; i++) {
+                const element = document.getElementById(`score1j${i + 1}`);
+            
+                if (i === highestIndex) {
+                  element.innerHTML = `<span class="badge bg-success">${scores[i]}</span>`;
+                  console.log(scores[i])
+                  console.log(i + 1)
+                } else if (i === lowestIndex) {
+                  element.innerHTML = `<span class="badge bg-danger">${scores[i]}</span>`;
+                  console.log(scores[i])
+                  console.log(i + 1)
+                }
+            }
+
+            // Find the indices of elements with the highest and lowest scores
+            for (let i = 0; i < scores1.length; i++) {
+                if (scores1[i] === highestScore1) {
+                  highestIndex1 = i;
+                  console.log(`highest score is: ${highestIndex1 + 1}`)
+                  break;
+                }
+            }
+
+            // // Find the index of the first occurrence of the lowest score
+            for (let i = 0; i < scores1.length; i++) {
+                if (scores1[i] === lowestScore1) {
+                lowestIndex1 = i;
+                console.log(`lowest score is: ${lowestIndex1 + 1}`)
+                break;
+                }
+            }
+
+            for (let i = 0; i < scores1.length; i++) {
+                const element = document.getElementById(`score2j${i + 1}`);
+            
+                if (i === highestIndex1) {
+                  element.innerHTML = `<span class="badge bg-success">${scores1[i]}</span>`;
+                  console.log(scores1[i])
+                  console.log(i + 1)
+                } else if (i === lowestIndex1) {
+                  element.innerHTML = `<span class="badge bg-danger">${scores1[i]}</span>`;
+                  console.log(scores1[i])
+                  console.log(i + 1)
+                }
+            }
+
+            //// Create an array to store the data objects
+            //const data = [];
+//
+            //// Push each data object to the array
+            //data.push({ "message1": document.getElementById("score1j1").textContent.trim(), "message2": document.getElementById("score2j1").textContent.trim(), "sender": 1 });
+            //data.push({ "message1": document.getElementById("score1j2").textContent.trim(), "message2": document.getElementById("score2j2").textContent.trim(), "sender": 2 });
+            //data.push({ "message1": document.getElementById("score1j3").textContent.trim(), "message2": document.getElementById("score2j3").textContent.trim(), "sender": 3 });
+            //data.push({ "message1": document.getElementById("score1j4").textContent.trim(), "message2": document.getElementById("score2j4").textContent.trim(), "sender": 4 });
+            //data.push({ "message1": document.getElementById("score1j5").textContent.trim(), "message2": document.getElementById("score2j5").textContent.trim(), "sender": 5 });
+            //// ... Repeat the above for other elements
+//
+            //// Convert the array to a JSON string
+            //const jsonData = JSON.stringify(data);
+//
+            //var csrftoken1 = $('[name=csrfmiddlewaretoken]').val();
+//
+            //console.log(jsonData)
+//
+            //$.ajax({
+            //    url: saveUrl,
+            //    method: "POST",
+            //    headers: { "X-CSRFToken": csrftoken1 },  // Pass the CSRF token in the headers
+            //    data: jsonData,
+            //    success: function(data) {
+            //        console.log("Data sent");
+            //        console.log(data);
+            //        document.getElementById("testingButton").style.display = "none";
+            //      },
+            //      error: function(xhr, status, error) {
+            //        console.error('Error:', error);
+            //      }
+            //});
+        
+          }
+    
+    </script>
+    {% endblock scripts %}
+
+{% endblock content %}
